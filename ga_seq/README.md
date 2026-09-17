@@ -47,16 +47,18 @@ Implementa a criação dos filhos:
 - `tournament_select()` seleciona um pai por torneio de tamanho dois;
 - `population_reproduce()` seleciona dois pais, define o ponto de crossover, monta cada filho e aplica mutação bit a bit.
 
-Como esta é a versão de referência, a reprodução inteira é sequencial.
+Como esta é a versão de referência, a reprodução inteira é sequencial. Cada filho, porém, recebe a mesma seed local determinística usada pela versão OpenMP. Isso preserva exatamente a trajetória aleatória do AG e torna os tempos comparáveis.
 
 ### `rng.c`
 
-Implementa o gerador pseudoaleatório xorshift usado pelo AG. O estado é único e global, algo seguro porque só existe uma thread nesta versão.
+Implementa o gerador pseudoaleatório xorshift usado pelo AG. O estado global é usado apenas na inicialização sequencial; a reprodução usa estados locais derivados da seed, geração e índice do filho para coincidir com a versão OpenMP.
 
 - `rng_seed()` define a seed;
 - `rng64()` produz um valor de 64 bits;
 - `rng_index()` produz um índice no intervalo solicitado;
-- `rng_unit()` produz um valor em `[0, 1)` para decidir mutações.
+- `rng_unit()` produz um valor em `[0, 1)` a partir do estado global;
+- as variantes `*_from_state()` operam sobre o estado local de um filho;
+- `rng_seed_for_individual()` produz a seed determinística compartilhada pelas duas versões.
 
 ## Pasta `include/`
 

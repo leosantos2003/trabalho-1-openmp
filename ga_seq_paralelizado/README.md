@@ -48,7 +48,7 @@ Implementa o xorshift e evita estado aleatório compartilhado entre threads:
 - `rng64()`, `rng_index()` e `rng_unit()` usam um estado recebido por ponteiro;
 - `rng_seed_for_individual()` cria um estado determinístico a partir da seed base, geração e índice do filho.
 
-Logo, cada iteração da reprodução recebe seu próprio estado de RNG. O resultado não depende de qual thread executou determinado filho, o que evita condição de corrida e torna os testes reproduzíveis ao mudar `OMP_NUM_THREADS`.
+Logo, cada iteração da reprodução recebe seu próprio estado de RNG. O resultado não depende de qual thread executou determinado filho, o que evita condição de corrida e torna os testes reproduzíveis ao mudar `OMP_NUM_THREADS`. A versão sequencial usa a mesma regra de seeds, portanto também produz o mesmo resultado para os mesmos argumentos.
 
 ## Diretivas de paralelismo
 

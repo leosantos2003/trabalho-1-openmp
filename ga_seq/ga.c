@@ -19,6 +19,13 @@ static double now_seconds(void) {
 int ga_run(const GAConfig *config, int *global_best, double *elapsed_seconds) {
     const size_t population_size = config->population_size;
     const size_t bits_per_individual = config->bits_per_individual;
+
+    if (population_size > SIZE_MAX / bits_per_individual ||
+        population_size > SIZE_MAX / sizeof(int)) {
+        fprintf(stderr, "Parâmetros excedem o limite de alocação.\n");
+        return 1;
+    }
+
     uint8_t *population = malloc(population_size * bits_per_individual * sizeof(*population));
     uint8_t *next_population = malloc(population_size * bits_per_individual * sizeof(*next_population));
     int *fitness = malloc(population_size * sizeof(*fitness));
@@ -39,7 +46,8 @@ int ga_run(const GAConfig *config, int *global_best, double *elapsed_seconds) {
 
     for (int generation = 0; generation < config->generations; generation++) {
         population_reproduce(population, next_population, fitness, population_size,
-                             bits_per_individual, config->mutation_rate);
+                             bits_per_individual, config->mutation_rate,
+                             config->seed, generation);
 
         uint8_t *temporary = population;
         population = next_population;

@@ -9,6 +9,8 @@ void population_reproduce(const uint8_t *population,
                           const int *fitness,
                           size_t population_size,
                           size_t bits_per_individual,
-                          double mutation_rate);
+                          double mutation_rate,
+                          uint64_t base_seed,
+                          int generation);
 
 #endif
