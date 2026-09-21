@@ -9,6 +9,7 @@ dados coletados nem recalcular as medições.
 from __future__ import annotations
 
 import csv
+import re
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -139,6 +140,10 @@ def _environment_values(path: Path | None) -> list[tuple[str, str]]:
         "Núcleos físicos",
         "CPUs lógicas totais",
         "CPUs lógicas disponíveis ao processo",
+        "Job ID",
+        "Partição",
+        "Nós alocados",
+        "CPUs solicitadas no nó",
         "Compilador",
         "Flags sequenciais",
         "Flags paralelas",
@@ -278,6 +283,17 @@ def _vtune_excerpt(path: Path, maximum_lines: int = 24) -> list[str]:
     return excerpt
 
 
+def _vtune_failure_message(path: Path) -> str:
+    """Extrai uma mensagem curta de um log de falha do mecanismo do VTune."""
+    source = _read_text(path)
+    match = re.search(r"<description>(.*?)</description>", source, flags=re.DOTALL)
+    if match:
+        return " ".join(match.group(1).split())
+
+    first_line = next((line.strip() for line in source.splitlines() if line.strip()), "")
+    return first_line or "mensagem de erro indisponível"
+
+
 def _vtune_section(base_dir: Path) -> list[str]:
     root = base_dir / "vtune" / "resultados"
     results = (
@@ -313,6 +329,25 @@ def _vtune_section(base_dir: Path) -> list[str]:
             result / "hpc" / "resumo.txt",
         )
         available = [path for path in important if path.exists()]
+        failure_logs = sorted(
+            path for path in result.rglob("pinerr.tpsslog") if path.is_file()
+        )
+        profile_reports = [path for path in available if path.name == "resumo.txt"]
+
+        if failure_logs:
+            lines.extend(
+                (
+                    "**Coleta sem perfil utilizável.** O VTune registrou um erro antes de "
+                    "produzir relatórios de desempenho. Não use este diretório para atribuir "
+                    "hotspots ou causas à curva de speedup.",
+                    "",
+                )
+            )
+            for failure_log in failure_logs:
+                relative = _relative_link(base_dir, failure_log)
+                lines.append(f"- {relative}: `{_vtune_failure_message(failure_log)}`")
+            lines.append("")
+
         if not available:
             lines.extend(("Nenhum arquivo de resumo reconhecido foi encontrado nesse diretório.", ""))
             continue
@@ -338,6 +373,14 @@ def _vtune_section(base_dir: Path) -> list[str]:
                     "```",
                     "",
                     "</details>",
+                    "",
+                )
+            )
+
+        if not profile_reports and not failure_logs:
+            lines.extend(
+                (
+                    "Nenhum `resumo.txt` de uma análise concluída foi encontrado nesse diretório.",
                     "",
                 )
             )

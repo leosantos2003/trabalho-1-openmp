@@ -67,6 +67,16 @@ fi
     printf -- '- Núcleos por soquete: %s\n' "${cores_per_socket:-não identificado}"
     printf -- '- Threads por núcleo: %s\n' "${threads_per_core:-não identificado}"
 
+    printf '\n### Alocação Slurm\n\n'
+    if [[ -n ${SLURM_JOB_ID:-} ]]; then
+        printf -- '- Job ID: `%s`\n' "$SLURM_JOB_ID"
+        printf -- '- Partição: `%s`\n' "${SLURM_JOB_PARTITION:-não identificado}"
+        printf -- '- Nós alocados: `%s`\n' "${SLURM_NODELIST:-não identificado}"
+        printf -- '- CPUs solicitadas no nó: `%s`\n' "${SLURM_CPUS_ON_NODE:-não identificado}"
+    else
+        printf -- '- Alocação Slurm: não detectada neste processo.\n'
+    fi
+
     printf '\n### Compilação\n\n'
     printf -- '- Compilador: `%s`\n' "$compiler_version"
     printf -- '- Flags sequenciais: `%s`\n' "$seq_cflags"

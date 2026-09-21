@@ -7,9 +7,16 @@ Esta pasta guarda os resultados de perfilamento usados para explicar os gráfico
 Entre na máquina de coleta, vá à raiz do projeto e execute:
 
 ```bash
+set +u
 source /home/intel/oneapi/vtune/2021.1.1/vtune-vars.sh
+set -u
 vtune -version
 ```
+
+O `set +u` temporário evita um erro do próprio `vtune-vars.sh`, que consulta
+variáveis de shells como `ZSH_VERSION` e `KSH_VERSION` quando elas não estão
+definidas. O coletor aplica esse mesmo tratamento automaticamente quando
+precisa carregar o VTune.
 
 Se o arquivo de ambiente estiver em outro local, informe-o por meio da variável `VTUNE_VARS`:
 
@@ -17,6 +24,19 @@ Se o arquivo de ambiente estiver em outro local, informe-o por meio da variável
 VTUNE_VARS=/caminho/para/vtune-vars.sh \
   ./experimentos_hype/vtune/coletar_vtune.sh --help
 ```
+
+## Estado da coleta de 17/09/2026
+
+Os tempos sem instrumentação foram coletados com sucesso em `hype2`. A tentativa
+de Hotspots com o VTune 2021.1.1, porém, falhou antes de iniciar o AG: o motor
+Pin dessa versão não reconheceu a seção `.relr.dyn` do carregador dinâmico do
+Debian 12. O diretório `resultados/20260917_150435_grande_p8_g500/` preserva
+o log desse erro, mas **não contém um perfil utilizável** nem deve ser usado
+para identificar hotspots.
+
+Antes de uma nova tentativa, solicite à administração ou ao professor uma
+versão mais recente do VTune, ou o procedimento compatível indicado para os
+nós Hype. Consulte também [../../analise_resultados_hype.md](../../analise_resultados_hype.md).
 
 ## Coleta recomendada
 

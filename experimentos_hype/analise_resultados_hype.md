@@ -1,111 +1,160 @@
-# Análise crítica da coleta de desempenho
+# Análise crítica dos resultados de desempenho na Hype
+
+Rodada analisada: 17/09/2026, 14:59–15:02, registrada em
+[dados/tempos_ambiente.md](dados/tempos_ambiente.md).
 
 ## Conclusão principal
 
-Os resultados são internamente coerentes e mostram boa escalabilidade OpenMP no nó `bali2`. Porém, **não são resultados da Hype** e não devem ser apresentados como tal na versão final do trabalho. O arquivo de ambiente registra `Host: bali2`, 16 núcleos físicos, 32 CPUs lógicas e 31 GiB de memória, enquanto a partição solicitada para a coleta final é `hype`, cujos nós aparecem como `hype[1-5]` na consulta ao Slurm.
+Esta é uma coleta válida de desempenho na Hype: o registro automático indica o host
+hype2, com 20 núcleos físicos, 40 CPUs lógicas, dois soquetes e afinidade OpenMP
+em núcleos. Foram feitas 210 execuções, todas com o fitness esperado para o
+respectivo conjunto. Os gráficos e as medianas desta pasta já podem sustentar a
+discussão do item de desempenho do trabalho.
 
-Portanto, esta rodada deve ser preservada como experimento preliminar no PCAD, mas a bateria precisa ser repetida dentro de uma alocação cujo `hostname`, `SLURM_JOB_PARTITION` e `SLURM_NODELIST` indiquem um nó `hype`.
+A implementação apresenta escalabilidade forte até 20 threads, o total de núcleos
+físicos do nó. O maior speedup de escalabilidade foi 14,64×, no conjunto grande
+com 20 threads, com eficiência de 73,2%. A queda gradual de eficiência é esperada
+e não há regressão ao passar de 16 para 20 threads. O perfil do VTune, entretanto,
+**não foi concluído**; ainda não há evidência de hotspots para explicar
+quantitativamente essa perda de eficiência.
 
 ## Evidências usadas
 
 - [Tempos brutos](dados/tempos.csv): 210 execuções.
 - [Resumo de medianas](dados/resumo.csv): tempos, speedup e eficiência.
-- [Registro do ambiente](dados/tempos_ambiente.md): nó, topologia, compilador e carga.
+- [Registro do ambiente](dados/tempos_ambiente.md): nó, topologia, compilador,
+  flags e carga antes/depois da bateria.
 - [Relatório consolidado](resultados_hype.md) e gráficos em [graficos/](graficos/).
+- Tentativa de VTune em
+  [vtune/resultados/20260917_150435_grande_p8_g500/](vtune/resultados/20260917_150435_grande_p8_g500/).
 
 ## Validade da rodada
 
 | Critério | Evidência | Avaliação |
 | --- | --- | --- |
-| Cobertura da coleta | 3 conjuntos × 10 execuções sequenciais + 3 conjuntos × 6 contagens de threads × 10 execuções paralelas = 210 linhas. | Correta. |
-| Amostras | O resumo contém 10 amostras sequenciais e 10 paralelas em cada ponto. | Correta. |
-| Correção funcional | O melhor fitness é constante para todas as execuções de cada conjunto: 847, 1522 e 1575. | Correta. |
-| Métrica de escalabilidade | `S(1) = 1` e `E(1) = 1` em todos os conjuntos. | Correta. |
-| Ambiente de desempenho | Antes da coleta, a carga média era 0,12 / 0,08 / 0,03 e não havia outro processo relevante consumindo CPU. | Adequado. |
-| Nó-alvo | A coleta foi feita em `bali2`, não em `hype[1-5]`. | **Inválida como coleta final da Hype.** |
-| VTune | Não há resultados em `vtune/resultados/`. | Ainda pendente. |
+| Nó-alvo | Host hype2, 20 núcleos físicos e 40 CPUs lógicas. | Coleta na Hype. |
+| Cobertura | 3 conjuntos × 10 execuções sequenciais + 3 conjuntos × 6 contagens de threads × 10 execuções paralelas = 210 linhas. | Correta. |
+| Amostras | Cada ponto tem 10 amostras sequenciais e 10 paralelas. | Correta. |
+| Correção funcional | O melhor fitness permaneceu em 847, 1522 e 1575 para pequeno, médio e grande, respectivamente. | Correta. |
+| Métrica de escalabilidade | S(1) = 1 e E(1) = 1 em todos os conjuntos. | Correta. |
+| Carga externa inicial | Média de carga 0,05 / 0,54 / 0,81; a lista de processos não mostra outra carga relevante. | Adequada. |
+| Carga externa final | Média de 1 minuto em 3,91, logo após a própria bateria paralela; a lista de processos ainda não mostra concorrência relevante. | Não invalida a rodada. |
+| VTune | Hotspots foi iniciado, mas falhou antes de executar o AG e não gerou resumo.txt nem hotspots_por_funcao.txt. | Pendente. |
 
-O aumento da carga de 1 minuto para 4,28 ao final é compatível com a própria bateria paralela que acabara de ser executada. A lista de processos não mostra outra carga concorrente relevante; portanto, ela não invalida a rodada em `bali2`.
+O registro existente não salvou as variáveis de partição e de nós do Slurm, mas
+o host hype2 coincide com a alocação Hype validada no terminal. Para futuras
+coletas, o script coletar_ambiente.sh passou a registrar também esses campos.
 
-## Comportamento medido
+## Tempo e tamanho do problema
 
-### Tempo e tamanho do problema
+O trabalho nominal, aproximado por população × bits, vale 1, 4 e 8 para os
+conjuntos pequeno, médio e grande. Os tempos sequenciais medianos seguem essa
+progressão de modo próximo:
 
-O tempo sequencial mediano cresce quase proporcionalmente ao trabalho nominal `população × bits`:
+| Conjunto | Trabalho relativo | Tempo sequencial mediano | Fator sobre pequeno |
+| --- | ---: | ---: | ---: |
+| pequeno | 1 | 0,462991 s | 1,00× |
+| médio | 4 | 1,792537 s | 3,87× |
+| grande | 8 | 3,568084 s | 7,71× |
 
-| Conjunto | Trabalho nominal relativo | Tempo sequencial mediano |
-| --- | ---: | ---: |
-| pequeno | 1 | 0,636254 s |
-| medio | 4 | 2,528772 s |
-| grande | 8 | 5,051685 s |
+O crescimento ligeiramente menor que o nominal pode resultar de custos fixos
+amortizados em problemas maiores e de efeitos de cache. Como a tendência é
+monótona e próxima do trabalho relativo, os três conjuntos são adequados para
+medir escalabilidade.
 
-Do pequeno para o médio, o tempo cresce 3,97×; do pequeno para o grande, 7,94×. Os valores são próximos aos fatores de trabalho 4× e 8×. Isso indica que os três conjuntos aumentam a carga de forma previsível e são adequados para observar escalabilidade.
+## Speedup e eficiência
 
-### Speedup e eficiência
-
-`S(p)` usa a versão paralela com uma thread como referência: `S(p) = Tpar(1) / Tpar(p)`. `E(p) = S(p) / p`.
+S(p) = Tpar(1) / Tpar(p) mede a escalabilidade da própria implementação
+paralela. E(p) = S(p) / p mostra quanto do ideal linear foi obtido. Os valores
+abaixo vêm das medianas de dez execuções por ponto.
 
 | Threads | Pequeno: S(p) / E(p) | Médio: S(p) / E(p) | Grande: S(p) / E(p) |
 | ---: | ---: | ---: | ---: |
-| 2 | 1,970× / 98,5% | 1,975× / 98,7% | 1,974× / 98,7% |
-| 4 | 3,466× / 86,6% | 3,483× / 87,1% | 3,485× / 87,1% |
-| 8 | 6,426× / 80,3% | 6,485× / 81,1% | 6,501× / 81,3% |
-| 16 | **11,464× / 71,7%** | **11,993× / 75,0%** | **12,114× / 75,7%** |
-| 20 | 10,889× / 54,4% | 11,403× / 57,0% | 11,494× / 57,5% |
+| 2 | 1,954× / 97,7% | 1,959× / 98,0% | 1,968× / 98,4% |
+| 4 | 3,462× / 86,5% | 3,491× / 87,3% | 3,498× / 87,5% |
+| 8 | 6,457× / 80,7% | 6,506× / 81,3% | 6,543× / 81,8% |
+| 16 | 11,244× / 70,3% | 11,908× / 74,4% | 12,115× / 75,7% |
+| 20 | **13,361× / 66,8%** | **14,352× / 71,8%** | **14,636× / 73,2%** |
 
-O comportamento faz sentido para um algoritmo com trabalho regular por indivíduo:
+- Duas threads entregam 97,7%–98,4% de eficiência, muito próximo do ideal.
+- A eficiência diminui gradualmente à medida que aumentam sincronização,
+  coordenação de regiões paralelas e competição por recursos compartilhados.
+- O conjunto grande mantém a melhor eficiência em 20 threads, enquanto o
+  pequeno sofre mais com custos fixos relativos de paralelismo.
+- De 16 para 20 threads, o tempo cai 15,85% no pequeno, 17,02% no médio e
+  17,22% no grande. O ganho adicional é útil, mas menor que os 25% ideais.
 
-- Com duas threads, a eficiência está entre 98,5% e 98,7%, quase ideal.
-- A eficiência cai gradualmente a partir de quatro threads, mas ainda está entre 71,7% e 75,7% em 16 threads.
-- O maior speedup de cada conjunto ocorre em 16 threads, exatamente a quantidade de núcleos físicos registrada em `bali2`.
-- Ao passar de 16 para 20 threads, o tempo mediano aumenta cerca de 5,2% a 5,4% nos três conjuntos e o speedup cai cerca de 5,0%.
+Os 20 threads testados ocupam os 20 núcleos físicos, não os 40 lógicos. Isso é
+uma escolha metodológica adequada para a curva principal, pois evita confundir
+escalabilidade OpenMP com hyperthreading. Um ponto em 40 threads pode ser
+incluído somente como experimento complementar, claramente identificado como
+teste de hyperthreading, caso o professor o solicite.
 
-A explicação mais provável para a queda em 20 threads é que 20 threads ultrapassam os 16 núcleos físicos e passam a compartilhar recursos por hyperthreading. Sobrecarga de criação/sincronização de threads, competição por cache e largura de banda de memória também podem contribuir. Essas são hipóteses consistentes com os dados, mas só o VTune ou contadores de hardware poderiam quantificar cada causa.
+Uma leitura pela lei de Amdahl produz frações seriais efetivas de 2,62%, 2,07%
+e 1,93% nos conjuntos pequeno, médio e grande, respectivamente, usando os
+speedups em 20 threads. Essas frações agregam código serial, sincronização,
+desequilíbrio e limites de memória. Elas ajudam a explicar por que o ganho
+adicional diminui conforme p aumenta.
 
-O speedup adicional `Tseq / Tpar(p)` é muito próximo de `S(p)`: com uma thread, a diferença entre a versão sequencial e a paralela é inferior a 0,5% em todos os conjuntos. Assim, não há evidência de overhead material da infraestrutura OpenMP quando ela usa apenas uma thread.
+## Comparação com a versão sequencial
+
+O indicador separado Tseq / Tpar(p) compara executáveis distintos. Em uma
+thread, ele é 1,035×, 1,011× e 1,006× para pequeno, médio e grande. Portanto,
+a versão paralela com uma thread não apresenta penalidade relevante frente à
+sequencial; no conjunto pequeno a diferença de 3,5% também pode refletir
+variação normal e pequenas diferenças entre os executáveis. Para discutir
+escalabilidade, a referência mais apropriada continua sendo S(p), que usa a
+mesma versão paralela em uma thread.
 
 ## Estabilidade das medições
 
-As repetições são muito estáveis na maior parte dos pontos. Para todas as medições paralelas até oito threads, o coeficiente de variação é no máximo 0,53%. Em 16 threads, apareceram duas execuções mais lentas:
+As repetições são estáveis. O coeficiente de variação é inferior a 1% em 15 dos
+21 grupos de medições; os maiores casos são:
 
-| Conjunto e threads | Mediana | Maior tempo | Coeficiente de variação | Observação |
+| Configuração | Mediana | Maior tempo | Coeficiente de variação | Leitura |
 | --- | ---: | ---: | ---: | --- |
-| médio, 16 | 0,209824 s | 0,244866 s | 5,20% | Uma execução foi aproximadamente 16,7% mais lenta que a mediana. |
-| grande, 16 | 0,415054 s | 0,441233 s | 2,01% | Uma execução foi aproximadamente 6,3% mais lenta que a mediana. |
+| pequeno, 4 threads | 0,129264 s | 0,143469 s | 3,44% | Uma execução isolada mais lenta. |
+| médio, 8 threads | 0,272584 s | 0,299891 s | 3,15% | Uma execução isolada mais lenta. |
+| grande, 20 threads | 0,242369 s | 0,256304 s | 2,17% | Variação moderada em um ponto de alta concorrência. |
 
-Esses pontos não devem ser removidos sem justificativa. O uso da mediana, já adotado no resumo, é apropriado porque reduz o efeito dessas variações isoladas. As nove demais execuções de `médio, 16` ficaram entre 0,208991 s e 0,211515 s, o que reforça a estabilidade da tendência central.
+Não há justificativa para excluir essas amostras. A mediana, já usada nos CSVs
+e gráficos, reduz corretamente a influência de episódios isolados sem ocultar
+os dados brutos. Para os slides, apresente a mediana como métrica central e
+cite que há dez repetições por configuração.
 
-## O que pode ser dito no trabalho
+## Situação do Intel VTune Profiler
 
-É defensável afirmar que, **no nó `bali2`**, a implementação paralela apresenta escalabilidade forte: o speedup cresce de forma próxima do ideal até duas threads, chega a aproximadamente 11,5×–12,1× em 16 threads e perde desempenho ao ultrapassar os 16 núcleos físicos.
+A tentativa de Hotspots usou o conjunto grande, oito threads e 500 gerações
+apenas para prolongar a execução perfilada. O ambiente e os parâmetros foram
+registrados, mas o VTune 2021.1.1 falhou no mecanismo Pin ao ler a seção
+.relr.dyn de /lib64/ld-linux-x86-64.so.2. O arquivo
+[pinerr.tpsslog](vtune/resultados/20260917_150435_grande_p8_g500/hotspots-bad/data.0/pinerr.tpsslog)
+confirma que a falha ocorreu antes do AG; por isso não existem resultados de
+hotspots, snapshot ou HPC Performance utilizáveis.
 
-Não é defensável afirmar que esses valores caracterizam a Hype. Eles não devem compor os gráficos ou conclusões finais identificados como “Hype”, nem ser comparados numericamente aos resultados do notebook como se fossem a mesma máquina.
+Esta falha não afeta os tempos sem instrumentação. Para cumprir a parte do
+VTune do enunciado, é necessário obter da administração/professor uma versão
+mais recente do VTune ou um procedimento compatível com o Debian 12 da Hype e
+repetir uma coleta. Até lá, não atribua a queda de eficiência a uma função
+específica ou a uma limitação de memória com base nesses arquivos incompletos.
 
-## Repetição obrigatória na Hype
+## Texto defensável para o relatório ou apresentação
 
-Antes de iniciar a nova coleta, já dentro da alocação, execute e confira:
-
-```bash
-hostname
-printf 'job=%s\nparticao=%s\nnos=%s\ncpus=%s\n' \
-  "$SLURM_JOB_ID" "$SLURM_JOB_PARTITION" \
-  "$SLURM_NODELIST" "$SLURM_CPUS_ON_NODE"
-LC_ALL=C lscpu
-```
-
-Para a coleta ser válida como Hype, o resultado deve indicar:
-
-- `hostname` com nome `hypeN`;
-- `particao=hype`;
-- `nos=hypeN`;
-- uma contagem de threads baseada nos núcleos físicos mostrados por `lscpu`.
-
-Faça novamente uma execução piloto com uma thread. Se a versão com uma thread ficar curta demais na Hype, aumente gerações antes da bateria de dez repetições. Só então execute `executar_testes.sh`, gere os gráficos e o relatório. Depois da validação dessa nova rodada, escolha um conjunto médio ou grande e faça o VTune na mesma partição.
+> Na Hype (hype2, 20 núcleos físicos), a implementação OpenMP apresentou
+> speedup de 13,36× a 14,64× em 20 threads, com eficiência entre 66,8% e
+> 73,2%. A eficiência foi próxima de 98% em duas threads e diminuiu
+> gradualmente ao aumentar o paralelismo, comportamento compatível com custos
+> de sincronização e recursos compartilhados. Os resultados usam a mediana de
+> dez repetições e mantiveram o mesmo fitness em todas as execuções. A análise
+> detalhada por VTune permanece pendente por incompatibilidade da instalação
+> 2021.1.1 com o ambiente do nó.
 
 ## Próximos passos
 
-1. Preserve os dados atuais como `bali2`; não use `OVERWRITE=1` sobre eles.
-2. Reserve um nó da partição `hype` e valide o ambiente com os comandos acima.
-3. Salve a nova rodada em arquivos distintos ou arquive a atual antes de executar a coleta válida na Hype.
-4. Gere novamente `resumo.csv`, gráficos e `resultados_hype.md` somente com os dados da Hype.
-5. Execute Snapshot, Hotspots e/ou HPC Performance no caso escolhido e atualize o relatório.
+1. Use os CSVs e gráficos atuais como resultados finais do item de desempenho.
+2. Preserve o diretório hotspots-bad como evidência da falha, mas não o use
+   como perfil de desempenho.
+3. Solicite uma instalação ou módulo de VTune compatível e repita Hotspots,
+   Snapshot ou HPC Performance na Hype, sem substituir os tempos da bateria.
+4. Após uma coleta bem-sucedida, gere novamente resultados_hype.md e atualize
+   apenas a seção de VTune desta análise.

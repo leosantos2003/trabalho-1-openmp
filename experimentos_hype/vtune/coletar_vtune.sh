@@ -71,8 +71,12 @@ fi
 
 if ! command -v vtune >/dev/null; then
     if [[ -f "$VTUNE_VARS" ]]; then
+        # O script da oneAPI consulta ZSH_VERSION e KSH_VERSION sem inicializá-las.
+        # Como este coletor usa `set -u`, desative-o apenas durante o carregamento.
+        set +u
         # shellcheck disable=SC1090
         source "$VTUNE_VARS"
+        set -u
     else
         echo "Erro: VTune não está no PATH e o ambiente não foi encontrado em:" >&2
         echo "  $VTUNE_VARS" >&2

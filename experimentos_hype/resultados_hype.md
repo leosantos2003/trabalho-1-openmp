@@ -1,6 +1,6 @@
 # Resultados dos experimentos na Hype
 
-Gerado automaticamente em `2026-09-17T09:08:10-03:00`.
+Gerado automaticamente em `2026-09-17T15:21:17-03:00`.
 
 ## Como ler este documento
 
@@ -18,19 +18,19 @@ Resumo baseado em [dados/tempos_ambiente.md](dados/tempos_ambiente.md).
 
 | Campo | Valor |
 | --- | --- |
-| Data e hora | `2026-09-17T09:04:34-03:00` |
-| Host | `bali2` |
+| Data e hora | `2026-09-17T15:02:35-03:00` |
+| Host | `hype2` |
 | Sistema operacional | Debian GNU/Linux 12 (bookworm) |
 | Kernel | `Linux 6.1.0-45-amd64 x86_64 GNU/Linux` |
-| Modelo | Intel(R) Xeon(R) CPU E5-2650 0 @ 2.00GHz |
-| Núcleos físicos | 16 |
-| CPUs lógicas totais | 32 |
-| CPUs lógicas disponíveis ao processo | 32 |
+| Modelo | Intel(R) Xeon(R) CPU E5-2650 v3 @ 2.30GHz |
+| Núcleos físicos | 20 |
+| CPUs lógicas totais | 40 |
+| CPUs lógicas disponíveis ao processo | 40 |
 | Compilador | `gcc (Debian 12.2.0-14+deb12u1) 12.2.0` |
 | Flags sequenciais | `-O2 -g -std=c11 -Wall -Wextra -Wpedantic -Iinclude` |
 | Flags paralelas | `-O2 -g -std=c11 -Wall -Wextra -Wpedantic -fopenmp -Iinclude` |
 | Afinidade usada pelo coletor | `OMP_DYNAMIC=FALSE`, `OMP_PROC_BIND=true`, `OMP_PLACES=cores` |
-| Uptime e média de carga | ` 09:04:34 up 138 days,  8:23,  4 users,  load average: 4.28, 1.49, 0.58` |
+| Uptime e média de carga | ` 15:02:35 up 138 days, 14:19,  1 user,  load average: 3.91, 1.64, 1.17` |
 
 ## Configurações testadas
 
@@ -46,30 +46,30 @@ Resumo baseado em [dados/tempos_ambiente.md](dados/tempos_ambiente.md).
 
 | Entrada | Threads | Tseq (s) | Tpar(1) (s) | Tpar(p) (s) | S(p) | E(p) | Tseq/Tpar(p) | n seq | n par |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| grande | 1 | 5.051685 | 5.028056 | 5.028056 | 1.000× | 100.0% | 1.005× | 10 | 10 |
-| grande | 2 | 5.051685 | 5.028056 | 2.546925 | 1.974× | 98.7% | 1.983× | 10 | 10 |
-| grande | 4 | 5.051685 | 5.028056 | 1.442975 | 3.485× | 87.1% | 3.501× | 10 | 10 |
-| grande | 8 | 5.051685 | 5.028056 | 0.773392 | 6.501× | 81.3% | 6.532× | 10 | 10 |
-| grande | 16 | 5.051685 | 5.028056 | 0.415054 | 12.114× | 75.7% | 12.171× | 10 | 10 |
-| grande | 20 | 5.051685 | 5.028056 | 0.437462 | 11.494× | 57.5% | 11.548× | 10 | 10 |
-| medio | 1 | 2.528771 | 2.516309 | 2.516309 | 1.000× | 100.0% | 1.005× | 10 | 10 |
-| medio | 2 | 2.528771 | 2.516309 | 1.274126 | 1.975× | 98.7% | 1.985× | 10 | 10 |
-| medio | 4 | 2.528771 | 2.516309 | 0.722356 | 3.483× | 87.1% | 3.501× | 10 | 10 |
-| medio | 8 | 2.528771 | 2.516309 | 0.388014 | 6.485× | 81.1% | 6.517× | 10 | 10 |
-| medio | 16 | 2.528771 | 2.516309 | 0.209823 | 11.993× | 75.0% | 12.052× | 10 | 10 |
-| medio | 20 | 2.528771 | 2.516309 | 0.220671 | 11.403× | 57.0% | 11.459× | 10 | 10 |
-| pequeno | 1 | 0.636254 | 0.634193 | 0.634193 | 1.000× | 100.0% | 1.003× | 10 | 10 |
-| pequeno | 2 | 0.636254 | 0.634193 | 0.321932 | 1.970× | 98.5% | 1.976× | 10 | 10 |
-| pequeno | 4 | 0.636254 | 0.634193 | 0.182990 | 3.466× | 86.6% | 3.477× | 10 | 10 |
-| pequeno | 8 | 0.636254 | 0.634193 | 0.098694 | 6.426× | 80.3% | 6.447× | 10 | 10 |
-| pequeno | 16 | 0.636254 | 0.634193 | 0.055320 | 11.464× | 71.7% | 11.501× | 10 | 10 |
-| pequeno | 20 | 0.636254 | 0.634193 | 0.058243 | 10.889× | 54.4% | 10.924× | 10 | 10 |
+| grande | 1 | 3.568084 | 3.547283 | 3.547283 | 1.000× | 100.0% | 1.006× | 10 | 10 |
+| grande | 2 | 3.568084 | 3.547283 | 1.802328 | 1.968× | 98.4% | 1.980× | 10 | 10 |
+| grande | 4 | 3.568084 | 3.547283 | 1.013961 | 3.498× | 87.5% | 3.519× | 10 | 10 |
+| grande | 8 | 3.568084 | 3.547283 | 0.542153 | 6.543× | 81.8% | 6.581× | 10 | 10 |
+| grande | 16 | 3.568084 | 3.547283 | 0.292798 | 12.115× | 75.7% | 12.186× | 10 | 10 |
+| grande | 20 | 3.568084 | 3.547283 | 0.242368 | 14.636× | 73.2% | 14.722× | 10 | 10 |
+| medio | 1 | 1.792537 | 1.773529 | 1.773529 | 1.000× | 100.0% | 1.011× | 10 | 10 |
+| medio | 2 | 1.792537 | 1.773529 | 0.905177 | 1.959× | 98.0% | 1.980× | 10 | 10 |
+| medio | 4 | 1.792537 | 1.773529 | 0.507984 | 3.491× | 87.3% | 3.529× | 10 | 10 |
+| medio | 8 | 1.792537 | 1.773529 | 0.272583 | 6.506× | 81.3% | 6.576× | 10 | 10 |
+| medio | 16 | 1.792537 | 1.773529 | 0.148932 | 11.908× | 74.4% | 12.036× | 10 | 10 |
+| medio | 20 | 1.792537 | 1.773529 | 0.123578 | 14.352× | 71.8% | 14.505× | 10 | 10 |
+| pequeno | 1 | 0.462991 | 0.447454 | 0.447454 | 1.000× | 100.0% | 1.035× | 10 | 10 |
+| pequeno | 2 | 0.462991 | 0.447454 | 0.228954 | 1.954× | 97.7% | 2.022× | 10 | 10 |
+| pequeno | 4 | 0.462991 | 0.447454 | 0.129264 | 3.462× | 86.5% | 3.582× | 10 | 10 |
+| pequeno | 8 | 0.462991 | 0.447454 | 0.069300 | 6.457× | 80.7% | 6.681× | 10 | 10 |
+| pequeno | 16 | 0.462991 | 0.447454 | 0.039795 | 11.244× | 70.3% | 11.634× | 10 | 10 |
+| pequeno | 20 | 0.462991 | 0.447454 | 0.033489 | 13.361× | 66.8% | 13.825× | 10 | 10 |
 
 ### Destaques numéricos
 
-- `grande`: maior speedup observado foi 12.114× com `p=16` (eficiência 75.7%).
-- `medio`: maior speedup observado foi 11.993× com `p=16` (eficiência 75.0%).
-- `pequeno`: maior speedup observado foi 11.464× com `p=16` (eficiência 71.7%).
+- `grande`: maior speedup observado foi 14.636× com `p=20` (eficiência 73.2%).
+- `medio`: maior speedup observado foi 14.352× com `p=20` (eficiência 71.8%).
+- `pequeno`: maior speedup observado foi 13.361× com `p=20` (eficiência 66.8%).
 
 ## Integridade observada
 
@@ -126,7 +126,16 @@ As figuras abaixo são as evidências visuais produzidas pela automação. Os va
 
 ## Evidências do Intel VTune Profiler
 
-Ainda não há diretórios de resultados em `vtune/resultados/`. Execute a coleta na Hype e gere este relatório novamente.
+Cada bloco preserva os artefatos coletados para uma execução. Os trechos são apenas um índice de leitura: consulte o arquivo completo e compare com os tempos sem instrumentação antes de interpretar uma causa.
+
+### `20260917_150435_grande_p8_g500`
+
+**Coleta sem perfil utilizável.** O VTune registrou um erro antes de produzir relatórios de desempenho. Não use este diretório para atribuir hotspots ou causas à curva de speedup.
+
+- [vtune/resultados/20260917_150435_grande_p8_g500/hotspots-bad/data.0/pinerr.tpsslog](vtune/resultados/20260917_150435_grande_p8_g500/hotspots-bad/data.0/pinerr.tpsslog): `Source/pin/elfio/img_elf.cpp: ProcessSectionHeaders: 927: unknown section type 0x13 for sec[51,.relr.dyn] in /lib64/ld-linux-x86-64.so.2`
+
+Arquivos disponíveis: [vtune/resultados/20260917_150435_grande_p8_g500/metadados.md](vtune/resultados/20260917_150435_grande_p8_g500/metadados.md), [vtune/resultados/20260917_150435_grande_p8_g500/ambiente.md](vtune/resultados/20260917_150435_grande_p8_g500/ambiente.md).
+
 
 ## Roteiro para a análise crítica e os slides
 

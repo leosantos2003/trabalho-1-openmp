@@ -31,13 +31,13 @@
 <line class="grid" x1="825.00" y1="70" x2="825.00" y2="440"/>
 <text x="825.00" y="463" text-anchor="middle" font-size="14">20</text>
 <polyline points="95.00,423.18 241.00,406.36 387.00,372.73 533.00,305.45 679.00,170.91 825.00,103.64" fill="none" stroke="#6b7280" stroke-width="2" stroke-dasharray="7,5"/>
-<polyline points="95.00,423.18 241.00,406.79 387.00,381.41 533.00,330.93 679.00,238.31 825.00,248.22" fill="none" stroke="#2563eb" stroke-width="3"/>
+<polyline points="95.00,423.18 241.00,407.05 387.00,381.28 533.00,330.57 679.00,239.72 825.00,198.63" fill="none" stroke="#2563eb" stroke-width="3"/>
 <circle cx="95.00" cy="423.18" r="5" fill="#2563eb"/>
-<circle cx="241.00" cy="406.79" r="5" fill="#2563eb"/>
-<circle cx="387.00" cy="381.41" r="5" fill="#2563eb"/>
-<circle cx="533.00" cy="330.93" r="5" fill="#2563eb"/>
-<circle cx="679.00" cy="238.31" r="5" fill="#2563eb"/>
-<circle cx="825.00" cy="248.22" r="5" fill="#2563eb"/>
+<circle cx="241.00" cy="407.05" r="5" fill="#2563eb"/>
+<circle cx="387.00" cy="381.28" r="5" fill="#2563eb"/>
+<circle cx="533.00" cy="330.57" r="5" fill="#2563eb"/>
+<circle cx="679.00" cy="239.72" r="5" fill="#2563eb"/>
+<circle cx="825.00" cy="198.63" r="5" fill="#2563eb"/>
 <line x1="635" y1="55" x2="665" y2="55" stroke="#2563eb" stroke-width="3"/>
 <text x="673" y="60" font-size="13">Medido</text>
 <line x1="635" y1="77" x2="665" y2="77" stroke="#6b7280" stroke-width="2" stroke-dasharray="7,5"/>
