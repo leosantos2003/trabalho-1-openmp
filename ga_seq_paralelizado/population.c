@@ -6,7 +6,8 @@
 static int individual_evaluate(const uint8_t *individual,
                                size_t bits_per_individual) {
     int fitness = 0;
-
+    // Inclusion of SIMD, linear iteration of data
+    #pragma omp simd reduction(+:fitness)
     for (size_t bit = 0; bit < bits_per_individual; bit++) {
         fitness += individual[bit];
     }
