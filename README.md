@@ -139,4 +139,4 @@ Para uma nova coleta na Hype, use [experimentos_hype/vtune/README.md](experiment
 
 ## License
 
-Distributed under the MIT License. See LICENSE.txt for more information.
+Distributed under the MIT License. See `LICENSE.txt` for more information.
